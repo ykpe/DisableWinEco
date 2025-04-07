@@ -11,7 +11,8 @@
  
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,44,0,0">           
             <TextBox x:Name="myTextBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="220"/>
-            <Button Content="Disable Efficiency Mode" HorizontalAlignment="Left"   VerticalAlignment="Top"  Click="Button_Click"/>
+            <Button x:Name="myButton" Content="Disable Efficiency Mode" HorizontalAlignment="Left"   VerticalAlignment="Top"  Click="Button_Click"/>
         </StackPanel>
+        <CheckBox x:Name="myCheckBox" Content="Auto Startup" HorizontalAlignment="Left" Margin="90,98,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
     </Grid>
 </Window>
