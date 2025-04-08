@@ -94,7 +94,7 @@ namespace DisableWinEco
         {
             foreach (var process in Process.GetProcesses())
             {
-                bool containsKeyword = targerProcessNames.Any(keyword => process.ProcessName.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0);
+                bool containsKeyword = targerProcessNames.Any(keyword => process.ProcessName.Contains(keyword, StringComparison.OrdinalIgnoreCase));
 
                 if (containsKeyword)
                 {
