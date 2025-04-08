@@ -23,29 +23,17 @@ namespace DisableWinEco
         public MainWindow()
         {
             InitializeComponent();
-            trayIcon = new NotifyIcon
-            {
-                Icon = new System.Drawing.Icon("app.ico"),
-                Visible = true
-            };
-
-
-            ContextMenuStrip menu = new ContextMenuStrip();
-            menu.Items.Add("Show", null, ShowApp);
-            menu.Items.Add("Exit", null, ExitApp);
-
-            trayIcon.ContextMenuStrip = menu;
+            initialTaryIcon();
 
             string workingDictPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-
-
             processListFilePath = Path.Combine(workingDictPath, "processlist.txt");
 
             LoadListFromTemp();
 
-
             targerProcessNames = myTextBox.Text.Split(',');
+
             SwitchButtonText();
+            
             Task taskA = Task.Run(() => ScheduledCheck(), cts.Token);
 
             startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
@@ -53,28 +41,14 @@ namespace DisableWinEco
             if (System.IO.File.Exists(shortcutPath))
             {
                 myCheckBox.IsChecked = true;
+                this.Visibility = Visibility.Hidden;
             }
             else
             {
                 myCheckBox.IsChecked = false;
-
             }
         }
-        // 顯示主畫面
-        private void ShowApp(object sender, EventArgs e)
-        {
-            this.Activate();
-            this.Visibility = Visibility.Visible;
-        }
-
-        // 結束程式
-        private void ExitApp(object sender, EventArgs e)
-        {
-            trayIcon.Visible = false;
-            trayIcon.Dispose();
-            Environment.Exit(0);
-        }
-
+   
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             isRunning = !isRunning;
@@ -92,6 +66,7 @@ namespace DisableWinEco
             }
 
         }
+
         private void SwitchButtonText()
         {
             if (isRunning)
@@ -103,16 +78,14 @@ namespace DisableWinEco
                 myButton.Content = "Start";
             }
         }
+
         private void ScheduledCheck()
         {
             while (isRunning)
             {
-                CheckProcesssProirity();
-                Debug.WriteLine("Task A Running.");
-                System.Threading.Thread.Sleep(1000); // 每秒檢查一次
+                CheckProcesssProirity(); 
+                System.Threading.Thread.Sleep(60000);
             }
-            Debug.WriteLine("Task A has stopped.");
-
         }
 
         private void CheckProcesssProirity()
@@ -145,13 +118,43 @@ namespace DisableWinEco
             }
         }
 
+        #region taryIconAndCloseEvent
+        private void initialTaryIcon()
+        {
+            trayIcon = new NotifyIcon
+            {
+                Icon = new System.Drawing.Icon("app.ico"),
+                Visible = true
+            };
+
+
+            ContextMenuStrip menu = new ContextMenuStrip();
+            menu.Items.Add("Show", null, ShowApp);
+            menu.Items.Add("Exit", null, ExitApp);
+
+            trayIcon.ContextMenuStrip = menu;
+        }
+        private void ShowApp(object sender, EventArgs e)
+        {
+            this.Activate();
+            this.Visibility = Visibility.Visible;
+        }
+
+
+        private void ExitApp(object sender, EventArgs e)
+        {
+            trayIcon.Visible = false;
+            trayIcon.Dispose();
+            Environment.Exit(0);
+        }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true; // 取消關閉事件
             this.Visibility = Visibility.Hidden; // 隱藏窗口
         }
+        #endregion
 
-
+        #region ListCache
         private void SaveListToTemp()
         {
             System.IO.File.WriteAllLines(processListFilePath, targerProcessNames);
@@ -163,15 +166,15 @@ namespace DisableWinEco
             if (System.IO.File.Exists(processListFilePath))
             {
                 targerProcessNames = System.IO.File.ReadAllLines(processListFilePath);
-                myTextBox.Text = string.Join(",", targerProcessNames);
-                Debug.WriteLine("List loaded from temp file: " + processListFilePath);
+                myTextBox.Text = string.Join(",", targerProcessNames); 
             }
             else
             {
+                //Defualt value
                 myTextBox.Text = "chrome,edge,opera";
-                Debug.WriteLine("Temp file not found.");
             }
         }
+        #endregion
 
         #region SetProcessPriority
 
@@ -204,6 +207,7 @@ namespace DisableWinEco
         }
         #endregion
 
+        #region CheckBox_autoStart
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             CreateStartupShortcut();
@@ -239,6 +243,6 @@ namespace DisableWinEco
                 System.IO.File.Delete(shortcutPath);
             }
         }
-
+        #endregion
     }
 }
