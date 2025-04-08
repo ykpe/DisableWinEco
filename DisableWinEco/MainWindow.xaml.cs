@@ -2,7 +2,6 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Forms;
 using IWshRuntimeLibrary;
 
 namespace DisableWinEco
@@ -16,9 +15,8 @@ namespace DisableWinEco
         private NotifyIcon trayIcon = new();
         private bool isRunning = true;
         private CancellationTokenSource cts = new();
-        private readonly string startupFolder = "";
         private readonly string shortcutPath = "";
-        private readonly string processListFilePath = "";
+        private readonly string listFilePath = "";
 
         public MainWindow()
         {
@@ -29,7 +27,7 @@ namespace DisableWinEco
             string? workingDictPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             if (string.IsNullOrEmpty(workingDictPath) == false)
             {
-                processListFilePath = Path.Combine(workingDictPath, "processlist.txt");
+                listFilePath = Path.Combine(workingDictPath, "processlist.txt");
             }
 
             LoadListFromTemp();
@@ -40,8 +38,9 @@ namespace DisableWinEco
 
             Task taskA = Task.Run(() => ScheduledCheck(), cts.Token);
 
-            startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+            string startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
             shortcutPath = Path.Combine(startupFolder, "DisableWinRco.lnk");
+
             if (System.IO.File.Exists(shortcutPath))
             {
                 myCheckBox.IsChecked = true;
@@ -68,7 +67,6 @@ namespace DisableWinEco
             {
                 cts.Cancel();
             }
-
         }
 
         private void SwitchButtonText()
@@ -100,7 +98,6 @@ namespace DisableWinEco
 
                 if (containsKeyword)
                 {
-                    // 打開進程
                     IntPtr processHandle = OpenProcess(PROCESS_ALL_ACCESS, false, process.Id);
 
                     if (processHandle == IntPtr.Zero ||
@@ -152,23 +149,23 @@ namespace DisableWinEco
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            e.Cancel = true; // 取消關閉事件
-            this.Visibility = Visibility.Hidden; // 隱藏窗口
+            e.Cancel = true;  
+            this.Visibility = Visibility.Hidden;  
         }
         #endregion
 
         #region ListCache
         private void SaveListToTemp()
         {
-            System.IO.File.WriteAllLines(processListFilePath, targerProcessNames);
-            Debug.WriteLine("List saved to temp file: " + processListFilePath);
+            System.IO.File.WriteAllLines(listFilePath, targerProcessNames);
+            Debug.WriteLine("List saved to temp file: " + listFilePath);
         }
 
         private void LoadListFromTemp()
         {
-            if (System.IO.File.Exists(processListFilePath))
+            if (System.IO.File.Exists(listFilePath))
             {
-                targerProcessNames = System.IO.File.ReadAllLines(processListFilePath);
+                targerProcessNames = System.IO.File.ReadAllLines(listFilePath);
                 myTextBox.Text = string.Join(",", targerProcessNames);
             }
             else
@@ -205,7 +202,7 @@ namespace DisableWinEco
             }
             else
             {
-                System.Windows.MessageBox.Show("Fail");
+                Debug.WriteLine("Fail");
             }
         }
         #endregion
@@ -224,8 +221,6 @@ namespace DisableWinEco
 
         private void CreateStartupShortcut()
         {
-
-
             if (!System.IO.File.Exists(shortcutPath))
             {
                 IWshShell wsh = new WshShell();
