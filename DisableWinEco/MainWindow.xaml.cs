@@ -17,7 +17,7 @@ namespace DisableWinEco
         private CancellationTokenSource cts = new();
         private readonly string shortcutPath = "";
         private readonly string listFilePath = "";
-
+        private int CHECK_INTERVAL_SECOND = 10;
         public MainWindow()
         {
             InitializeComponent();
@@ -86,7 +86,7 @@ namespace DisableWinEco
             while (isRunning)
             {
                 CheckProcesssProirity();
-                System.Threading.Thread.Sleep(60000);
+                System.Threading.Thread.Sleep(CHECK_INTERVAL_SECOND*10);
             }
         }
 
