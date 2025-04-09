@@ -17,7 +17,7 @@ namespace DisableWinEco
         private CancellationTokenSource cts = new();
         private readonly string shortcutPath = "";
         private readonly string listFilePath = "";
-        private int CHECK_INTERVAL_SECOND = 10;
+        private int CHECK_INTERVAL_SECOND = 30;
         public MainWindow()
         {
             InitializeComponent();
@@ -39,7 +39,7 @@ namespace DisableWinEco
             Task taskA = Task.Run(() => ScheduledCheck(), cts.Token);
 
             string startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
-            shortcutPath = Path.Combine(startupFolder, "DisableWinRco.lnk");
+            shortcutPath = Path.Combine(startupFolder, "DisableWinEco.lnk");
 
             if (System.IO.File.Exists(shortcutPath))
             {
@@ -124,6 +124,7 @@ namespace DisableWinEco
         {
             trayIcon = new NotifyIcon
             {
+                Text = "Disable Efficiency Mode",
                 Icon = new System.Drawing.Icon("app.ico"),
                 Visible = true
             };
