@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="app.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 
